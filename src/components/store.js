@@ -7,20 +7,25 @@ const API = axios.create({
 
 const store = set => ({
   recipes: [],
+  selectRecipe: [],
   isLoading: false,
-  getFirstBatch: async (page = 1) => {
-    set(state => ({ isLoading: true }));
+  getBatch: async (page = 1) => {
+    set(store => ({ recipes: [], isLoading: true }));
     const perPage = 15;
     const { data } = await API.get(`?page=${page}&per_page=${perPage}`);
-    set(state => ({ recipes: data }));
-    set(state => ({ isLoading: false }));
+    set(store => ({ recipes: data, isLoading: false }));
   },
   getRecipeById: async id => {
-    set(state => ({ isLoading: true }));
+    set(store => ({ selectRecipe: [] }));
     const { data } = await API.get(`${id}`);
-    set(state => ({ recipes: data }));
-    set(state => ({ isLoading: false }));
+    set(store => ({ selectRecipe: data, isLoading: false }));
   },
+  deleteItem: async id => {
+    set(store => ({ recipes: [], isLoading: true }));
+    const { data } = await API.delete(id);
+    set(store => ({ recipes: data, isLoading: false }));
+  },
+  addToList: id => set(store => ({ selectRecipe: [] })),
 });
 
 export const useStore = create(store);
